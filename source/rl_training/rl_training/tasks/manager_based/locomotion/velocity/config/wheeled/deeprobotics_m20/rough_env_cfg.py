@@ -182,15 +182,15 @@ class DeeproboticsM20RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.rewards.joint_acc_wheel_l2.weight = -1e-7
         self.rewards.joint_acc_wheel_l2.params["asset_cfg"].joint_names = self.wheel_joint_names
         # self.rewards.create_joint_deviation_l1_rewterm("joint_deviation_hip_l1", -0.2, [".*_hip_joint"])
-        self.rewards.joint_pos_limits.weight = -5.0
+        self.rewards.joint_pos_limits.weight = -4.0
         self.rewards.joint_pos_limits.params["asset_cfg"].joint_names = self.leg_joint_names
         self.rewards.joint_vel_limits.weight = 0
         self.rewards.joint_vel_limits.params["asset_cfg"].joint_names = self.wheel_joint_names
         self.rewards.joint_power.weight = -2e-5
         self.rewards.joint_power.params["asset_cfg"].joint_names = self.leg_joint_names
-        self.rewards.stand_still.weight = -2.0
+        self.rewards.stand_still.weight = -1.5
         self.rewards.stand_still.params["asset_cfg"].joint_names = self.leg_joint_names
-        self.rewards.hipx_joint_pos_penalty.weight = -0.4
+        self.rewards.hipx_joint_pos_penalty.weight = -0.3
         self.rewards.hipx_joint_pos_penalty.params["asset_cfg"].joint_names = self.hipx_joint_names
         self.rewards.hipy_joint_pos_penalty.weight = -0.1
         self.rewards.hipy_joint_pos_penalty.params["asset_cfg"].joint_names = self.hipy_joint_names
@@ -215,8 +215,8 @@ class DeeproboticsM20RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.rewards.contact_forces.params["sensor_cfg"].body_names = [self.foot_link_name]
 
         # Velocity-tracking rewards
-        self.rewards.track_lin_vel_xy_exp.weight = 2.0 # 1.8
-        self.rewards.track_ang_vel_z_exp.weight = 1.0 # 1.2
+        self.rewards.track_lin_vel_xy_exp.weight = 2.5 # 1.8
+        self.rewards.track_ang_vel_z_exp.weight = 1.3 # 1.2
 
         # Others
         self.rewards.feet_air_time.weight = 0
