@@ -215,8 +215,8 @@ class DeeproboticsM20RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.rewards.contact_forces.params["sensor_cfg"].body_names = [self.foot_link_name]
 
         # Velocity-tracking rewards
-        self.rewards.track_lin_vel_xy_exp.weight = 2.5 # 1.8
-        self.rewards.track_ang_vel_z_exp.weight = 1.3 # 1.2
+        self.rewards.track_lin_vel_xy_exp.weight = 3.5 # 1.8
+        self.rewards.track_ang_vel_z_exp.weight = 1.5 # 1.2
 
         # Others
         self.rewards.feet_air_time.weight = 0
