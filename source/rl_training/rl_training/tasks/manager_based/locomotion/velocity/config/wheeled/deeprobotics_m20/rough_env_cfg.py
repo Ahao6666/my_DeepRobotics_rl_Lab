@@ -146,9 +146,9 @@ class DeeproboticsM20RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.events.randomize_com_positions.params["asset_cfg"].body_names = [self.base_link_name]
         self.events.randomize_apply_external_force_torque.params["asset_cfg"].body_names = [self.base_link_name]
 
-        self.scene.terrain.terrain_generator.sub_terrains["boxes"].grid_height_range = (0.025, 0.2)
-        self.scene.terrain.terrain_generator.sub_terrains["random_rough"].noise_range = (0.01, 0.16)
-        self.scene.terrain.terrain_generator.sub_terrains["random_rough"].noise_step = 0.01
+        self.scene.terrain.terrain_generator.sub_terrains["boxes"].grid_height_range = (0.05, 0.3)
+        self.scene.terrain.terrain_generator.sub_terrains["random_rough"].noise_range = (0.02, 0.25)
+        self.scene.terrain.terrain_generator.sub_terrains["random_rough"].noise_step = 0.02
 
         self.events.randomize_rigid_body_material.params["static_friction_range"] = [0.35, 1.5]
         self.events.randomize_rigid_body_material.params["dynamic_friction_range"] = [0.35, 1.5]

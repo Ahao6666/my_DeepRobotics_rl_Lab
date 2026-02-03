@@ -53,7 +53,7 @@ class MySceneCfg(InteractiveSceneCfg):
         prim_path="/World/ground",
         terrain_type="generator",
         terrain_generator=ROUGH_TERRAINS_CFG,
-        max_init_terrain_level=5,
+        max_init_terrain_level=12,
         collision_group=-1,
         physics_material=sim_utils.RigidBodyMaterialCfg(
             friction_combine_mode="multiply",
@@ -117,7 +117,7 @@ class CommandsCfg:
         heading_control_stiffness=0.5,
         debug_vis=True,
         ranges=mdp.UniformThresholdVelocityCommandCfg.Ranges(
-            lin_vel_x=(-1.0, 1.0), lin_vel_y=(-1.0, 1.0), ang_vel_z=(-1.0, 1.0), heading=(-math.pi, math.pi)
+            lin_vel_x=(-2.0, 2.0), lin_vel_y=(-2.0, 2.0), ang_vel_z=(-2.0, 2.0), heading=(-math.pi, math.pi)
         ),
     )
 
