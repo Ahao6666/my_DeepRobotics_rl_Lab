@@ -445,7 +445,7 @@ def feet_contact(
     reward *= torch.clamp(-env.scene["robot"].data.projected_gravity_b[:, 2], 0, 0.7) / 0.7
     return reward
 
-
+# 作用：当机器人接收到停止命令或极小命令时，奖励其保持所有足部与地面接触（不抬起脚）。
 def feet_contact_without_cmd(env: ManagerBasedRLEnv, command_name: str, sensor_cfg: SceneEntityCfg) -> torch.Tensor:
     """Reward feet contact"""
     # extract the used quantities (to enable type-hinting)

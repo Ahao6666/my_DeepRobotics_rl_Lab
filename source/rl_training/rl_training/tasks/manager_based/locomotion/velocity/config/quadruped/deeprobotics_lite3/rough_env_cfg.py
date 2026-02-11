@@ -103,64 +103,80 @@ class DeeproboticsLite3RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.scene.terrain.terrain_generator.sub_terrains["random_rough"].noise_step = 0.01
 
         # ------------------------------Rewards------------------------------
+        # 惩罚过快的动作变化，鼓励平滑运动
         self.rewards.action_rate_l2.weight = -0.02 #-0.02
         # self.rewards.smoothness_2.weight = -0.0075
 
+        # 维持身体高度 0.35m，过高/过低都扣分
         self.rewards.base_height_l2.weight = -10.0
         self.rewards.base_height_l2.params["target_height"] = 0.35
         self.rewards.base_height_l2.params["asset_cfg"].body_names = [self.base_link_name]
-
+        # 鼓励足部离地（更好的抬腿），标志着更有效的步态
         self.rewards.feet_air_time.weight = 5.0 # 5.0
         self.rewards.feet_air_time.params["threshold"] = 0.5
         self.rewards.feet_air_time.params["sensor_cfg"].body_names = [self.foot_link_name]
+        # 使四条腿的抬腿时间一致，避免不对称步态
         self.rewards.feet_air_time_variance.weight = -8.0 # -8.0
         self.rewards.feet_air_time_variance.params["sensor_cfg"].body_names = [self.foot_link_name]
+        # 惩罚足部在地面滑动，鼓励抓地力
         self.rewards.feet_slide.weight = -0.05
         self.rewards.feet_slide.params["sensor_cfg"].body_names = [self.foot_link_name]
         self.rewards.feet_slide.params["asset_cfg"].body_names = [self.foot_link_name]
+        # 当命令为 0 时，鼓励机器人保持原地站立
         self.rewards.stand_still.weight = -0.5 # -1.0
         self.rewards.stand_still.params["asset_cfg"].joint_names = self.joint_names
         self.rewards.stand_still.params["command_threshold"] = 0.1
+        # 足部不应太接近身体（高度 -0.35m），避免蜷缩
         self.rewards.feet_height_body.weight = -2.5 # -2.5
         self.rewards.feet_height_body.params["target_height"] = -0.35
         self.rewards.feet_height_body.params["asset_cfg"].body_names = [self.foot_link_name]
+        # 足部最低高度 0.05m，防止拖脚
         self.rewards.feet_height.weight = -0.2 # -0.2
         self.rewards.feet_height.params["asset_cfg"].body_names = [self.foot_link_name]
         self.rewards.feet_height.params["target_height"] = 0.05
+        # 减小足部接触力，鼓励轻柔接地
         self.rewards.contact_forces.weight = -1e-1 # -2e-2
         self.rewards.contact_forces.params["sensor_cfg"].body_names = [self.foot_link_name]
-
+        # 惩罚垂直方向速度，保持身体稳定不上下颠簸
         self.rewards.lin_vel_z_l2.weight = -2.0 #-2.0
+        # 惩罚绕 x/y 轴的滚转和俯仰，保持身体水平
         self.rewards.ang_vel_xy_l2.weight = -0.05 # -0.05
-
+        # [主奖励]追踪前后/左右命令速度，这是最重要的奖励
         self.rewards.track_lin_vel_xy_exp.weight = 3.0
+        # [主奖励]追踪转向命令，次优先级的奖励
         self.rewards.track_ang_vel_z_exp.weight = 1.5
-
+        # 惩罚身体其他部位（非足部）的接触，如膝盖碰地
         self.rewards.undesired_contacts.weight = -0.5
         self.rewards.undesired_contacts.params["sensor_cfg"].body_names = [f"^(?!.*{self.foot_link_name}).*"]
-
+        # 最小化关节力矩，鼓励低功耗运动
         self.rewards.joint_torques_l2.weight = -2.5e-5
+        # 最小化关节加速度，鼓励平滑控制
         self.rewards.joint_acc_l2.weight = -1e-8
+        # 对 HipX 关节的偏差惩罚，保持左右对称
         self.rewards.joint_deviation_l1.weight = -0.5
         self.rewards.joint_deviation_l1.params["asset_cfg"].joint_names = [".*HipX.*"]
+        # 最小化关节功率消耗，鼓励能效
         self.rewards.joint_power.weight = -2e-5
+        # 强制身体保持水平（不翻滚）
         self.rewards.flat_orientation_l2.weight = -5.0
 
         # add the following rewards to improve the gait
+        # 对角线步态奖励：FL↔HR 和 FR↔HL 配对抬起
         self.rewards.feet_gait.weight = 0.5
         self.rewards.feet_gait.params["synced_feet_pair_names"] = [
             ["FL_FOOT", "HR_FOOT"],
             ["FR_FOOT", "HL_FOOT"]
         ]
-
+        # 左右腿的运动应该镜像对称
         self.rewards.joint_mirror.weight = -0.05
         self.rewards.joint_mirror.params["mirror_joints"] = [
             ["FL_(HipX|HipY|Knee).*", "HR_(HipX|HipY|Knee).*"],
             ["FR_(HipX|HipY|Knee).*", "HL_(HipX|HipY|Knee).*"],
         ]
-
+        # 惩罚关节接近极限位置
         self.rewards.joint_pos_limits.weight = -5.0
         # self.rewards.joint_pos_penalty.weight = -1.0
+        # 无速度命令时，足部保持接触地面
         self.rewards.feet_contact_without_cmd.weight = 0.1
         self.rewards.feet_contact_without_cmd.params["sensor_cfg"].body_names = [self.foot_link_name]
 
@@ -178,6 +194,7 @@ class DeeproboticsLite3RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.curriculum.command_levels = None
 
         # ------------------------------Commands------------------------------
+        # 这个配置定义了在训练/推理过程中自动生成的速度指令范围。
         self.commands.base_velocity.ranges.lin_vel_x = (-1.5, 1.5)
         self.commands.base_velocity.ranges.lin_vel_y = (-0.8, 0.8)
         self.commands.base_velocity.ranges.ang_vel_z = (-0.8, 0.8)

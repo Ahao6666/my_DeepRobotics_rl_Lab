@@ -78,9 +78,6 @@ from isaaclab.utils.dict import print_dict
 from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper, export_policy_as_jit, export_policy_as_onnx
 from isaaclab_tasks.utils import get_checkpoint_path
 from isaaclab_tasks.utils.hydra import hydra_task_config
-from isaaclab.managers import EventTermCfg as EventTerm
-import rl_training.tasks.manager_based.locomotion.velocity.mdp as mdp
-from isaaclab.managers import SceneEntityCfg
 
 import rl_training.tasks  # noqa: F401
 from rl_utils import camera_follow
@@ -108,33 +105,9 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     # disable randomization for play
     env_cfg.observations.policy.enable_corruption = False
-    
-    # 禁用 reset 时的所有随机化事件，避免 play 时出现参数错误
-    env_cfg.events.randomize_rigid_body_material = None
-    env_cfg.events.randomize_rigid_body_mass = None
-    env_cfg.events.randomize_rigid_body_mass_base = None
-    env_cfg.events.randomize_rigid_body_inertia = None
-    env_cfg.events.randomize_com_positions = None
-    env_cfg.events.randomize_reset_joints = None
-    env_cfg.events.randomize_actuator_gains = None
-    env_cfg.events.randomize_reset_base = None
-    
-    # 启用外部扰动（可选，用于测试鲁棒性）
-    env_cfg.events.randomize_apply_external_force_torque = EventTerm(
-        func=mdp.apply_external_force_torque,
-        mode="reset",
-        params={
-            "asset_cfg": SceneEntityCfg("robot", body_names=""),
-            "force_range": (-3.0, 3.0),
-            "torque_range": (-3.0, 3.0),
-        },
-    )
-    env_cfg.events.randomize_push_robot = EventTerm(
-        func=mdp.push_by_setting_velocity,
-        mode="interval",
-        interval_range_s=(10.0, 15.0),
-        params={"velocity_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5)}},
-    )
+    # remove random pushing
+    # env_cfg.events.randomize_apply_external_force_torque = None
+    # env_cfg.events.push_robot = None
     env_cfg.curriculum.command_levels = None
 
     # ================= DEBUG: 输出扰动事件配置 =================
